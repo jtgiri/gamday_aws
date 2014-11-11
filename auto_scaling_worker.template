@@ -42,10 +42,10 @@
         "Namespace": "AWS/SQS",
         "MetricName": "ApproximateNumberOfMessagesVisible",
         "Dimensions": [{
-          "Name": "long-queue",
+          "Name": "QueueName",
           "Value" : { "Fn::GetAtt" : ["input", "QueueName"] }
         }],
-        "Statistic": "Sum",
+        "Statistic": "Average",
         "Period": "60",
         "EvaluationPeriods": "1",
         "Threshold": "10",
