@@ -83,6 +83,12 @@
           ]
         }
       },
+      "S3Bucket" : {
+      "Type" : "AWS::S3::Bucket",
+      "Properties" : {
+         "AccessControl" : "Private",
+         "BucketName" : "image-bucket-654321"}
+         },
 
       "PublicSubnet1" : {
         "Type" : "AWS::EC2::Subnet",
@@ -147,14 +153,25 @@
         "GroupDescription" : "Enable internal access to the NAT device",
         "VpcId" : { "Ref" : "myVPC" },
         "SecurityGroupIngress" : [
-           { "IpProtocol" : "tcp", "FromPort" : "80",  "ToPort" : "80",  "CidrIp" : "0.0.0.0/0"} ,
-           { "IpProtocol" : "tcp", "FromPort" : "443", "ToPort" : "443", "CidrIp" : "0.0.0.0/0"} ,
-           { "IpProtocol" : "tcp", "FromPort" : "22",  "ToPort" : "22",  "CidrIp" : "0.0.0.0/0"},
-            { "IpProtocol" : "tcp", "FromPort" : "587",  "ToPort" : "587",  "CidrIp" : "0.0.0.0/0"} ],
+
+           { "IpProtocol" : "tcp", "FromPort" : "22",  "ToPort" : "22",  "CidrIp" : "0.0.0.0/0"} ],
         "SecurityGroupEgress" : [
            { "IpProtocol" : "tcp", "FromPort" : "80",  "ToPort" : "80",  "CidrIp" : "0.0.0.0/0"} ,
            { "IpProtocol" : "tcp", "FromPort" : "443", "ToPort" : "443", "CidrIp" : "0.0.0.0/0"},
-           { "IpProtocol" : "tcp", "FromPort" : "587", "ToPort" : "587", "CidrIp" : "0.0.0.0/0"} ]
+           { "IpProtocol" : "tcp", "FromPort" : "22",  "ToPort" : "22",  "CidrIp" : "0.0.0.0/0"}]
+      }
+    }, 
+    "BatchProcessingSecurityGroup" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "Enable internal access to the NAT device",
+        "VpcId" : { "Ref" : "myVPC" },
+        "SecurityGroupIngress" : [
+           { "IpProtocol" : "tcp", "FromPort" : "22",  "ToPort" : "22",  "CidrIp" : "0.0.0.0/0"} ],
+        "SecurityGroupEgress" : [
+           { "IpProtocol" : "tcp", "FromPort" : "80",  "ToPort" : "80",  "CidrIp" : "0.0.0.0/0"} ,
+           { "IpProtocol" : "tcp", "FromPort" : "443", "ToPort" : "443", "CidrIp" : "0.0.0.0/0"},
+           { "IpProtocol" : "tcp", "FromPort" : "22",  "ToPort" : "22",  "CidrIp" : "0.0.0.0/0"} ]
       }
     }, 
     
@@ -388,7 +405,13 @@
         "VpcId" : {
           "Value" : {"Ref" : "myVPC"},
           "Description" : "VPC ID of newly created VPC"
-        }
+        },
+        "S3BucketSecureURL" : {
+      "Value" : { "Fn::Join" : [
+         "", [ "https://", { "Fn::GetAtt" : [ "S3Bucket", "DomainName" ] } ]
+      ] },
+      "Description" : "Name of S3 bucket to hold website content"
+   }
      }
 
 }   
